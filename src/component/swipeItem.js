@@ -5,7 +5,7 @@ import {
     PanResponder,
     StyleSheet,
     View,
-    Platform
+    Platform,
 } from 'react-native';
 import type {
     PanResponderInstance, 
@@ -13,6 +13,7 @@ import type {
     PanResponderGestureState
 } from 'PanResponder';
 import SwipeButtonsContainer from './swipeButtonsContainer';
+import { TouchableView } from '../../../../src/components';
 
 type Props = {
     children?: any,
@@ -271,12 +272,15 @@ export default class SwipeItem extends React.Component<Props, States> {
                     <Animated.View
                         style={[containerStyles.swipeContainer, panStyle]}
                         {...this._panResponder.panHandlers}
+                        
                     >   
-                        <View
+                        <TouchableView
+                        withoutFeedback
+                        onPress={this.props.onPress || null}
                             style={[swipeContainerStyle, containerStyles.swipeContainer]}
                         >
                             {this.props.children}
-                        </View>
+                        </TouchableView>
                     </Animated.View>
                     
                 </ContainerView>
