@@ -5,15 +5,15 @@ import {
     PanResponder,
     StyleSheet,
     View,
+    TouchableWithoutFeedback,
     Platform,
 } from 'react-native';
 import type {
-    PanResponderInstance, 
-    GestureResponderEvent, 
-    PanResponderGestureState
+    PanResponderInstance,
+        GestureResponderEvent,
+        PanResponderGestureState
 } from 'PanResponder';
 import SwipeButtonsContainer from './swipeButtonsContainer';
-import { TouchableView } from '../../../../src/components';
 
 type Props = {
     children?: any,
@@ -30,8 +30,8 @@ type Props = {
 
 type States = {|
     panDistance: Animated.ValueXY,
-    rightButtonTriggerPosition: number,
-    leftButtonTriggerPosition: number,
+        rightButtonTriggerPosition: number,
+            leftButtonTriggerPosition: number,
 |}
 
 declare var JSX: any;
@@ -40,7 +40,7 @@ export default class SwipeItem extends React.Component<Props, States> {
 
     _swipeItem: SwipeItem = this;
     _panResponder: PanResponder;
-    _panDistanceOffset: {x: number, y: number} = {x: 0, y: 0};
+    _panDistanceOffset: { x: number, y: number } = { x: 0, y: 0 };
 
     state: States = {
         panDistance: new Animated.ValueXY(),
@@ -63,7 +63,7 @@ export default class SwipeItem extends React.Component<Props, States> {
     /**
      * create panResponder
      */
-    _createPanResponderInstance() : PanResponderInstance {
+    _createPanResponderInstance(): PanResponderInstance {
         let instance: PanResponderInstance = PanResponder.create({
             onMoveShouldSetPanResponderCapture: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 if (Math.abs(gestureState.dx) < 5) {
@@ -72,7 +72,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                 const {
                     x: offsetX
                 } = this._panDistanceOffset;
-                
+
                 if (Math.round(offsetX) === 0) {
                     this.props.onSwipeInitial && this.props.onSwipeInitial(this._swipeItem);
                 }
@@ -82,7 +82,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                 //setting pan distance offset, make sure next touch will not jump to touch position immediately
                 this.state.panDistance.setOffset(this._panDistanceOffset);
                 //initial panDistance
-                this.state.panDistance.setValue({x: 0, y: 0});
+                this.state.panDistance.setValue({ x: 0, y: 0 });
             },
             onPanResponderMove: Animated.event(
                 [
@@ -97,7 +97,7 @@ export default class SwipeItem extends React.Component<Props, States> {
             },
             onPanResponderTerminate: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 this._moveToDestination(this._getSwipePositionDestinationValueX(gestureState.dx));
-                return true;  
+                return true;
             },
             onPanResponderTerminationRequest: (evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
                 // On Android, the component will stick at the last swipe position when pan responder terminate
@@ -106,7 +106,7 @@ export default class SwipeItem extends React.Component<Props, States> {
                     return true;
                 }
                 return false;
-                
+
             },
 
         });
@@ -125,7 +125,7 @@ export default class SwipeItem extends React.Component<Props, States> {
         this.state.panDistance.flattenOffset();
         Animated.spring(this.state.panDistance, {
             toValue: {
-                x: toX, 
+                x: toX,
                 y: 0
             },
             friction: 10,
@@ -147,8 +147,8 @@ export default class SwipeItem extends React.Component<Props, States> {
         } = this.state;
 
         let toValueX: number = 0;
-        let panSide: string = (panDistanceX > 0)? 'right': 'left';
-        let containerOffset: number = this._panDistanceOffset.x;        
+        let panSide: string = (panDistanceX > 0) ? 'right' : 'left';
+        let containerOffset: number = this._panDistanceOffset.x;
 
         if (panSide === 'right' && containerOffset > leftButtonTriggerPosition) {
             toValueX = leftButtonTriggerPosition;
@@ -179,20 +179,20 @@ export default class SwipeItem extends React.Component<Props, States> {
             style,
             children
         } = leftButtons.props;
-        
+
         let scale = this.state.panDistance.x.interpolate({
-            inputRange: [ -Infinity, -0.01, 0, leftButtonTriggerPosition, Infinity],
-            outputRange: [ 0.01, 0.01, 0.7, 1, 1],
+            inputRange: [-Infinity, -0.01, 0, leftButtonTriggerPosition, Infinity],
+            outputRange: [0.01, 0.01, 0.7, 1, 1],
         });
 
         let widthStyle = {
-            transform: [{scale}]
+            transform: [{ scale }]
         };
-        
+
         return (
             <SwipeButtonsContainer
                 style={[style, buttonViewStyles.container, buttonViewStyles.left, widthStyle]}
-                onLayout={({nativeEvent}) => {
+                onLayout={({ nativeEvent }) => {
                     this.setState({
                         leftButtonTriggerPosition: nativeEvent.layout.width
                     });
@@ -220,20 +220,20 @@ export default class SwipeItem extends React.Component<Props, States> {
             style,
             children,
         } = rightButtons.props;
-        
+
         let scale = this.state.panDistance.x.interpolate({
-            inputRange: [-Infinity , rightButtonTriggerPosition, 0, 0.1, Infinity],
+            inputRange: [-Infinity, rightButtonTriggerPosition, 0, 0.1, Infinity],
             outputRange: [1, 1, 0.7, 0.01, 0.01],
         });
 
         let widthStyle = {
-            transform: [{scale}]
+            transform: [{ scale }]
         };
-        
+
         return (
             <SwipeButtonsContainer
                 style={[style, buttonViewStyles.container, buttonViewStyles.right, widthStyle]}
-                onLayout={({nativeEvent}) => {
+                onLayout={({ nativeEvent }) => {
                     this.setState({
                         rightButtonTriggerPosition: -1 * nativeEvent.layout.width,
                     });
@@ -248,18 +248,18 @@ export default class SwipeItem extends React.Component<Props, States> {
         const panStyle = {
             transform: this.state.panDistance.getTranslateTransform()
         };
-        
+
         const {
             style,
             swipeContainerStyle,
             containerView: ContainerView = View,
         } = this.props;
-        
+
         return (
             <View>
                 <ContainerView
                     style={[
-                        style, 
+                        style,
                         containerStyles.rootContainer,
                     ]}
                 >
@@ -272,17 +272,17 @@ export default class SwipeItem extends React.Component<Props, States> {
                     <Animated.View
                         style={[containerStyles.swipeContainer, panStyle]}
                         {...this._panResponder.panHandlers}
-                        
-                    >   
-                        <TouchableView
-                        withoutFeedback
-                        onPress={this.props.onPress || null}
+
+                    >
+                        <TouchableWithoutFeedback
+
+                            onPress={this.props.onPress || null}
                             style={[swipeContainerStyle, containerStyles.swipeContainer]}
                         >
                             {this.props.children}
-                        </TouchableView>
+                        </TouchableWithoutFeedback>
                     </Animated.View>
-                    
+
                 </ContainerView>
             </View>
         );
@@ -306,6 +306,11 @@ const containerStyles = StyleSheet.create({
     swipeContainer: {
         height: '100%',
         width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 4,
+        elevation: 1,
     },
 });
 
